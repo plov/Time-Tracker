@@ -37,11 +37,11 @@ def execute_read_query(connection, query):
 
 @app.route("/")
 def home():
-    connection = create_connection("myfirst.db")
-    select_users = "select * from tbl1;"
+    connection = create_connection("TT.db")
+    select_users = "select * from users;"
     users = execute_read_query(connection, select_users)
 
-    for user in users:
-       app.logger.info("user:", user)
+    #for user in users:
+    #app.logger.info("user:", users)
 
-    return "qweqweqwe"
+    return users
