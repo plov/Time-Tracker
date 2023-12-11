@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Welcome
+{% endblock %}
+
+{% block main %}
+<div>
+    {% if session["user_id"] %}
+    <h3>Go</h3>
+    <button class="btn btn-primary" type="submit">start</button>
+    <button class="btn btn-primary" type="submit">end</button>
+    {% else %}
+    <h3>Hello. I tried to make an application for conveniently recording working hours.</h3>
+    <p>Please, choose to login or register</p>
+    {% endif %}
+</div>
+{% endblock %}
