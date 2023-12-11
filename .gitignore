@@ -1,2 +1,8 @@
 # ignore all directories
 helpers/
+
+__pycache__/
+
+flask_session/
+
+launch.json

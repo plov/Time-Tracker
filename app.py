@@ -28,11 +28,25 @@ def home():
 
     return render_template("index.html")
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 @login_required
 def index():
 
     userId = session["user_id"]
+    if request.method == 'POST':
+        if request.form.get('actionStart') == 'valueStart':
+                print(f"action start")
+        elif request.form.get('actionLunchStart') == 'valueLunchStart':
+                print(f"action lunch start")
+        elif request.form.get('actionLunchEnd') == 'valueLunchEnd':
+                print(f"action lunch end")
+        elif request.form.get('actionEnd') == 'valueEnd':
+                print(f"action end")
+        elif request.method == 'GET':
+            return render_template('index.html', form=form)
+    
+    return render_template("index.html")
+    
     #userRows = db.execute("SELECT cash FROM users WHERE users.id=?", userId)
     #currentShares = db.execute("SELECT symbol, quantity FROM shares WHERE userId = ? ", userId)
     #data2 = {}

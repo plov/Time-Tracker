@@ -8,8 +8,15 @@ Welcome
 <div>
     {% if session["user_id"] %}
     <h3>Go</h3>
-    <button class="btn btn-primary" type="submit">start</button>
-    <button class="btn btn-primary" type="submit">end</button>
+    <form action="/" method="post">
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button class="btn btn-primary" type="submit" value="valueStart" name="actionStart">start</button>
+            <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart">lunch start</button>
+            <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd">lunch end</button>
+            <button class="btn btn-primary" type="submit" value="valueEnd" name="actionEnd">end</button>
+        </div>
+    </form>
+
     {% else %}
     <h3>Hello. I tried to make an application for conveniently recording working hours.</h3>
     <p>Please, choose to login or register</p>
