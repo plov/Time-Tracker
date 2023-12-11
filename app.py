@@ -83,13 +83,9 @@ def register():
         else:
             # Query database for username
             hash = generate_password_hash(request.form.get("password"))
-            print(f"hash {hash}")
             userName = request.form.get("username")
-            print(f"username {username}")
             fname = request.form.get("firstname")
-            print(f"fname {fname}")
             lname = request.form.get("lastname")
-            print(f"lname {lname}")
             curdate = date.today()
             db.executePush("INSERT INTO users (username,  firstname, lastname, key, date) VALUES(?,?,?,?,?);", [userName, fname, lname, hash, curdate])
     else:
@@ -117,12 +113,10 @@ def login():
 
         # Query database for username
         userName = request.form.get("username")
-        print(f"SELECT * FROM users WHERE username = {userName};")
         rows = db.execute(f"SELECT * FROM users WHERE username = '{userName}';")
 
         # Ensure username exists and password is correct
         data = list(rows[0])
-        print(f"data hash: {data[4]}")
         if len(rows) != 1 or not check_password_hash(data[4], request.form.get("password")):
             return warning("invalid username and/or password", 403)
 
@@ -135,3 +129,13 @@ def login():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
+    
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
