@@ -2,11 +2,13 @@ import os
 from flask import Flask, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+from dailyTracking import dailyTracking
 
 from dbHelper import dbHelper
 from helpers import login_required, warning
 from flask_session import Session
 from datetime import date
+from enum import Enum
 
 app = Flask(__name__)
 
@@ -16,57 +18,53 @@ Session(app)
 
 
 db = dbHelper("TT.db")
+dailyTrack = dailyTracking(db, session)
 
+types = { 'start':1, 'end':2 }
 
+class timestampTypes(Enum):
+     START = 1
+     END = 2
 
-@app.route("/")
-def home():
+#@app.route("/")
+#def home():
     #users = db.execute("select * from users;")
 
     #for user in users:
     #app.logger.info("user:", users)
 
-    return render_template("index.html")
+    #return render_template("index.html")
 
 @app.route("/", methods=['GET', 'POST'])
 @login_required
 def index():
 
+    rows = dailyTrack.getTodayTrackings()
+    availableAactions = dailyTrack.checkAvailableActions(rows)
+    print(availableAactions)
+
     userId = session["user_id"]
     if request.method == 'POST':
         if request.form.get('actionStart') == 'valueStart':
-                print(f"action start")
+            dailyTrack.saveTimeLog(1, "startDay")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
         elif request.form.get('actionLunchStart') == 'valueLunchStart':
-                print(f"action lunch start")
+            dailyTrack.saveTimeLog(2, "startLunch")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
         elif request.form.get('actionLunchEnd') == 'valueLunchEnd':
-                print(f"action lunch end")
+            dailyTrack.saveTimeLog(1, "finishLunch")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
         elif request.form.get('actionEnd') == 'valueEnd':
-                print(f"action end")
-        elif request.method == 'GET':
-            return render_template('index.html', form=form)
+            dailyTrack.saveTimeLog(2, "finishDay")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
+    elif request.method == 'GET':
+        return render_template('index.html', actions=availableAactions)
     
-    return render_template("index.html")
-    
-    #userRows = db.execute("SELECT cash FROM users WHERE users.id=?", userId)
-    #currentShares = db.execute("SELECT symbol, quantity FROM shares WHERE userId = ? ", userId)
-    #data2 = {}
-    #totalSum = 0
-    #i = 0
-    #for share in currentShares:
-    #    data = lookup(share.get("symbol"))
-    #    price = usd(data.get("price"))
-    #    currentShares[i]["price"] = price
-    #    sum = usd(float(data.get("price")) * float(share.get("quantity")))
-    #    totalSum += float(data.get("price")) * float(share.get("quantity"))
-    #    currentShares[i]["totalPrice"] = sum
-    #    i += 1
-
-    #roundedSum = totalSum
-    #currentCash = userRows[0]["cash"]
-    #data2["sum"] = usd(currentCash + roundedSum)
-    #data2["cash"] = usd(currentCash)
-
-    return render_template("index.html")#, data = currentShares, data2 = data2
+    return render_template("index.html", actions=availableAactions)
 
 
 @app.route("/register", methods=["GET", "POST"])
