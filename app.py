@@ -39,9 +39,10 @@ class timestampTypes(Enum):
 @login_required
 def index():
 
+    total = 0
     rows = dailyTrack.getTodayTrackings()
+    actions = dailyTrack.getTimeActionsDict(rows)
     availableAactions = dailyTrack.checkAvailableActions(rows)
-    print(availableAactions)
 
     userId = session["user_id"]
     if request.method == 'POST':
@@ -49,22 +50,26 @@ def index():
             dailyTrack.saveTimeLog(1, "startDay")
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionLunchStart') == 'valueLunchStart':
             dailyTrack.saveTimeLog(2, "startLunch")
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionLunchEnd') == 'valueLunchEnd':
             dailyTrack.saveTimeLog(1, "finishLunch")
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionEnd') == 'valueEnd':
             dailyTrack.saveTimeLog(2, "finishDay")
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
+            total = dailyTrack.calcHours(rows)
     elif request.method == 'GET':
-        return render_template('index.html', actions=availableAactions)
-    
-    return render_template("index.html", actions=availableAactions)
+        return render_template('index.html', actions=availableAactions, actionsList=actions, total=total)
+    return render_template("index.html", actions=availableAactions, actionsList=actions, total=total)
 
 
 @app.route("/register", methods=["GET", "POST"])

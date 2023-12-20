@@ -7,6 +7,16 @@ Welcome
 {% block main %}
 <div>
     {% if session["user_id"] %}
+    <span id="datetime"></span>
+    <script>
+            function getFormattedDate(date) {
+                let year = date.getFullYear();
+                let month = (1 + date.getMonth()).toString().padStart(2, '0');
+                let day = date.getDate().toString().padStart(2, '0');
+                return month + '/' + day + '/' + year;
+            }
+            document.querySelector('#datetime').textContent = getFormattedDate(new Date());
+    </script>
     <h3>Go</h3>
     <form action="/" method="post">
         <div class="d-grid gap-2 col-6 mx-auto">
@@ -17,13 +27,13 @@ Welcome
             <button class="btn btn-primary" type="submit" value="valueStart" name="actionStart" disabled>start</button>
             {% endif %}
 
-            {% if actions["startLunch"] and not actions["startDay"] %}
+            {% if actions["startLunch"] and not actions["startDay"] and actions["finishDay"] %}
             <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart">lunch start</button>
             {% else %}
             <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart" disabled>lunch start</button>
             {% endif %}
 
-            {% if actions["finishLunch"] and not actions["startLunch"]%}
+            {% if actions["finishLunch"] and not actions["startLunch"] and actions["finishDay"] %}
             <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd">lunch end</button>
             {% else %}
             <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd" disabled>lunch end</button>
@@ -35,11 +45,28 @@ Welcome
             <button class="btn btn-primary" type="submit" value="valueEnd" name="actionEnd"disabled>end</button>
             {% endif %}
         </div>
-
+        <div class="d-grid gap-2 col-6 mx-auto">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Time</th>
+                        <th class="text-center">Type</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for d in actionsList %}
+                    <tr>
+                        <td class="text-center">{{ d.time }}</td>
+                        <td class="text-center">{{ d.info }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+        </div>
         <div>
-            <Table>
-                
-            </Table>
+            {% if total != 0 %}
+            <p>Total hours for today:{{total}} </p>
+            {% endif %}
         </div>
     </form>
 

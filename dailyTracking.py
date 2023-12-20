@@ -16,7 +16,7 @@ class dailyTracking:
     def getTodayTrackings(self):
         #day = datetime.today().date() 
         user = self.session["user_id"]
-        rows = self.db.execute(f"SELECT info FROM timelog WHERE user_id ={user} and strftime('%d', timestamp) == strftime('%d', date('now','localtime'));")
+        rows = self.db.execute(f"SELECT info, timestamp FROM timelog WHERE user_id ={user} and strftime('%d', timestamp) == strftime('%d', date('now','localtime'));")
         return rows
     
     def awailableActions2List(self, actions):
@@ -35,3 +35,27 @@ class dailyTracking:
         for item in actionList:
             result[item] = False
         return result
+    
+    def getTimeActionsDict(self, actions) -> dict:
+        result = []
+        for action in actions:
+            time = self.getTimeFromString(action[1])
+            result.append({"info":action[0], "time":time})
+        return result
+    
+    def calcHours(self, actions):
+        actionsDict = {}
+        actionList = self.getTimeActionsDict(actions)
+        for item in actionList:
+            actionsDict[item["info"]] = item["time"]
+        dayHours = datetime.strptime(actionsDict["finishDay"], "%H:%M") - datetime.strptime(actionsDict["startDay"], "%H:%M")
+        lunchHours = datetime.strptime(actionsDict["finishLunch"], "%H:%M") - datetime.strptime(actionsDict["startLunch"], "%H:%M")
+        return dayHours - lunchHours
+
+    def getTimeFromString(self, timestamp):
+        date_format = '%Y-%m-%d %H:%M:%S.%f'
+        date_obj = datetime.strptime(timestamp, date_format)
+        return date_obj.time().isoformat('minutes')
+    
+    
+    
