@@ -26,14 +26,6 @@ class timestampTypes(Enum):
      START = 1
      END = 2
 
-#@app.route("/")
-#def home():
-    #users = db.execute("select * from users;")
-
-    #for user in users:
-    #app.logger.info("user:", users)
-
-    #return render_template("index.html")
 
 @app.route("/", methods=['GET', 'POST'])
 @login_required
@@ -70,6 +62,17 @@ def index():
     elif request.method == 'GET':
         return render_template('index.html', actions=availableAactions, actionsList=actions, total=total)
     return render_template("index.html", actions=availableAactions, actionsList=actions, total=total)
+
+
+@app.route("/week", methods=['GET', 'POST'])
+@login_required
+def week():
+    return render_template("week.html")
+
+@app.route("/month", methods=['GET', 'POST'])
+@login_required
+def month():
+    return render_template("month.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
