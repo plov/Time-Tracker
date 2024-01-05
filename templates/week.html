@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Welcome
+{% endblock %}
+
+{% block main %}
+<div>
+    {% if session["user_id"] %}
+    <div class="d-grid gap-2 col-6 mx-auto"> Week: {{dateStart}} - {{dateEnd}}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">{{date}}</td>
+                    <td class="text-center">{{hours}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h3>Hello. I tried to make an application for conveniently recording working hours.</h3>
+    <p>Please, choose to login or register</p>
+    {% endif %}
+</div>
+{% endblock %}

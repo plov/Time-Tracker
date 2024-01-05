@@ -2,11 +2,15 @@ import os
 from flask import Flask, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+from dailyTracking import dailyTracking
 
 from dbHelper import dbHelper
 from helpers import login_required, warning
 from flask_session import Session
 from datetime import date
+from enum import Enum
+from calendarLogic import CalendarLogic
+
 
 app = Flask(__name__)
 
@@ -16,43 +20,80 @@ Session(app)
 
 
 db = dbHelper("TT.db")
+dailyTrack = dailyTracking(db, session)
+
+types = { 'start':1, 'end':2 }
+
+class timestampTypes(Enum):
+     START = 1
+     END = 2
 
 
-
-@app.route("/")
-def home():
-    #users = db.execute("select * from users;")
-
-    #for user in users:
-    #app.logger.info("user:", users)
-
-    return render_template("index.html")
-
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 @login_required
 def index():
 
+    total = 0
+    rows = dailyTrack.getTodayTrackings()
+    actions = dailyTrack.getTimeActionsDict(rows)
+    availableAactions = dailyTrack.checkAvailableActions(rows)
+
     userId = session["user_id"]
-    #userRows = db.execute("SELECT cash FROM users WHERE users.id=?", userId)
-    #currentShares = db.execute("SELECT symbol, quantity FROM shares WHERE userId = ? ", userId)
-    #data2 = {}
-    #totalSum = 0
-    #i = 0
-    #for share in currentShares:
-    #    data = lookup(share.get("symbol"))
-    #    price = usd(data.get("price"))
-    #    currentShares[i]["price"] = price
-    #    sum = usd(float(data.get("price")) * float(share.get("quantity")))
-    #    totalSum += float(data.get("price")) * float(share.get("quantity"))
-    #    currentShares[i]["totalPrice"] = sum
-    #    i += 1
+    if request.method == 'POST':
+        if request.form.get('actionStart') == 'valueStart':
+            dailyTrack.saveTimeLog(1, "startDay")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
+        elif request.form.get('actionLunchStart') == 'valueLunchStart':
+            dailyTrack.saveTimeLog(2, "startLunch")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
+        elif request.form.get('actionLunchEnd') == 'valueLunchEnd':
+            dailyTrack.saveTimeLog(1, "finishLunch")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
+        elif request.form.get('actionEnd') == 'valueEnd':
+            dailyTrack.saveTimeLog(2, "finishDay")
+            rows = dailyTrack.getTodayTrackings()
+            availableAactions = dailyTrack.checkAvailableActions(rows)
+            actions = dailyTrack.getTimeActionsDict(rows)
+            total = dailyTrack.calcHours(rows)
+    elif request.method == 'GET':
+        return render_template('index.html', actions=availableAactions, actionsList=actions, total=total)
+    return render_template("index.html", actions=availableAactions, actionsList=actions, total=total)
 
-    #roundedSum = totalSum
-    #currentCash = userRows[0]["cash"]
-    #data2["sum"] = usd(currentCash + roundedSum)
-    #data2["cash"] = usd(currentCash)
 
-    return render_template("index.html")#, data = currentShares, data2 = data2
+@app.route("/week", methods=['GET', 'POST'])
+@login_required
+def week():
+    return render_template("week.html")
+
+@app.route("/month", methods=['GET', 'POST'])
+@login_required
+def month():
+    if request.method == 'POST':
+        if request.form.get('actionLeft') == 'valueLeft':
+            CalendarLogic.setFirsDayOfWeek(0) #create config with start day
+            yearFromForm = int(request.form.get('yearField'))
+            monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
+            month, currentYear = CalendarLogic.previousMonthAndYear(yearFromForm, monthFromForm) #datetime.today().year, datetime.today().month)
+            currentMonth = CalendarLogic.MONTHS[month-1]
+            return render_template("month.html", monthName = currentMonth, year = currentYear)
+        if request.form.get('actionRight') == 'valueRight':
+            CalendarLogic.setFirsDayOfWeek(0)
+            yearFromForm = int(request.form.get('yearField'))
+            monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
+            month, currentYear = CalendarLogic.nextMonthAndYear(yearFromForm, monthFromForm)
+            currentMonth = CalendarLogic.MONTHS[month-1]
+            return render_template("month.html", monthName = currentMonth, year = currentYear)
+            
+    if request.method == 'GET':
+        currentMonth = CalendarLogic.MONTHS[datetime.today().month-1]
+        currentYear = datetime.today().year
+        return render_template("month.html", monthName = currentMonth, year = currentYear)
 
 
 @app.route("/register", methods=["GET", "POST"])

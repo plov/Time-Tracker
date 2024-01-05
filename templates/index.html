@@ -7,9 +7,69 @@ Welcome
 {% block main %}
 <div>
     {% if session["user_id"] %}
+    <span id="datetime"></span>
+    <script>
+            function getFormattedDate(date) {
+                let year = date.getFullYear();
+                let month = (1 + date.getMonth()).toString().padStart(2, '0');
+                let day = date.getDate().toString().padStart(2, '0');
+                return month + '/' + day + '/' + year;
+            }
+            document.querySelector('#datetime').textContent = getFormattedDate(new Date());
+    </script>
     <h3>Go</h3>
-    <button class="btn btn-primary" type="submit">start</button>
-    <button class="btn btn-primary" type="submit">end</button>
+    <form action="/" method="post">
+        <div class="d-grid gap-2 col-6 mx-auto">
+   
+            {% if actions["startDay"] %}
+            <button class="btn btn-primary" type="submit" value="valueStart" name="actionStart">start</button>
+            {% else %}
+            <button class="btn btn-primary" type="submit" value="valueStart" name="actionStart" disabled>start</button>
+            {% endif %}
+
+            {% if actions["startLunch"] and not actions["startDay"] and actions["finishDay"] %}
+            <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart">lunch start</button>
+            {% else %}
+            <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart" disabled>lunch start</button>
+            {% endif %}
+
+            {% if actions["finishLunch"] and not actions["startLunch"] and actions["finishDay"] %}
+            <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd">lunch end</button>
+            {% else %}
+            <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd" disabled>lunch end</button>
+            {% endif %}
+
+            {% if actions["finishDay"] and actions["startDay"] == False %}
+            <button class="btn btn-primary" type="submit" value="valueEnd" name="actionEnd">end</button>
+            {% else %}
+            <button class="btn btn-primary" type="submit" value="valueEnd" name="actionEnd"disabled>end</button>
+            {% endif %}
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Time</th>
+                        <th class="text-center">Type</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for d in actionsList %}
+                    <tr>
+                        <td class="text-center">{{ d.time }}</td>
+                        <td class="text-center">{{ d.info }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+        </div>
+        <div>
+            {% if total != 0 %}
+            <p>Total hours for today:{{total}} </p>
+            {% endif %}
+        </div>
+    </form>
+
     {% else %}
     <h3>Hello. I tried to make an application for conveniently recording working hours.</h3>
     <p>Please, choose to login or register</p>
