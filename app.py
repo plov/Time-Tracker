@@ -9,6 +9,8 @@ from helpers import login_required, warning
 from flask_session import Session
 from datetime import date
 from enum import Enum
+from calendarLogic import CalendarLogic
+
 
 app = Flask(__name__)
 
@@ -72,7 +74,26 @@ def week():
 @app.route("/month", methods=['GET', 'POST'])
 @login_required
 def month():
-    return render_template("month.html")
+    if request.method == 'POST':
+        if request.form.get('actionLeft') == 'valueLeft':
+            CalendarLogic.setFirsDayOfWeek(0) #create config with start day
+            yearFromForm = int(request.form.get('yearField'))
+            monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
+            month, currentYear = CalendarLogic.previousMonthAndYear(yearFromForm, monthFromForm) #datetime.today().year, datetime.today().month)
+            currentMonth = CalendarLogic.MONTHS[month-1]
+            return render_template("month.html", monthName = currentMonth, year = currentYear)
+        if request.form.get('actionRight') == 'valueRight':
+            CalendarLogic.setFirsDayOfWeek(0)
+            yearFromForm = int(request.form.get('yearField'))
+            monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
+            month, currentYear = CalendarLogic.nextMonthAndYear(yearFromForm, monthFromForm)
+            currentMonth = CalendarLogic.MONTHS[month-1]
+            return render_template("month.html", monthName = currentMonth, year = currentYear)
+            
+    if request.method == 'GET':
+        currentMonth = CalendarLogic.MONTHS[datetime.today().month-1]
+        currentYear = datetime.today().year
+        return render_template("month.html", monthName = currentMonth, year = currentYear)
 
 
 @app.route("/register", methods=["GET", "POST"])
