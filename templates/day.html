@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Welcome
+{% endblock %}
+
+{% block main %}
+<div>
+    {% if session["user_id"] %}
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center">Time</th>
+                    <th class="text-center">Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in actionsList %}
+                <tr>
+                    <td class="text-center">{{ d.time }}</td>
+                    <td class="text-center">{{ d.info }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div>
+        {% if total != 0 %}
+        <p>Total hours for this day:{{total}} </p>
+        {% endif %}
+    </div>
+    </form>
+
+    {% else %}
+    <h3>Hello. I tried to make an application for conveniently recording working hours.</h3>
+    <p>Please, choose to login or register</p>
+    {% endif %}
+</div>
+{% endblock %}

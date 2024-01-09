@@ -74,27 +74,42 @@ def week():
 @app.route("/month", methods=['GET', 'POST'])
 @login_required
 def month():
+    CalendarLogic.setFirsDayOfWeek(6) #create config with start day
     if request.method == 'POST':
+        yearFromForm = int(request.form.get('yearField'))
+        monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
         if request.form.get('actionLeft') == 'valueLeft':
-            CalendarLogic.setFirsDayOfWeek(0) #create config with start day
-            yearFromForm = int(request.form.get('yearField'))
-            monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
-            month, currentYear = CalendarLogic.previousMonthAndYear(yearFromForm, monthFromForm) #datetime.today().year, datetime.today().month)
-            currentMonth = CalendarLogic.MONTHS[month-1]
-            return render_template("month.html", monthName = currentMonth, year = currentYear)
+            selectedMonth, selectedYear = CalendarLogic.previousMonthAndYear(yearFromForm, monthFromForm) #datetime.today().year, datetime.today().month)
+            selectedMonthName = CalendarLogic.MONTHS[selectedMonth-1]
+            days = CalendarLogic.monthDaysWithWeekday(selectedYear, selectedMonth)
+            return render_template("month.html", monthName = selectedMonthName, year = selectedYear, monthDays = days)
         if request.form.get('actionRight') == 'valueRight':
-            CalendarLogic.setFirsDayOfWeek(0)
-            yearFromForm = int(request.form.get('yearField'))
-            monthFromForm = CalendarLogic.convertMonthToNumber(request.form.get('monthField'))
-            month, currentYear = CalendarLogic.nextMonthAndYear(yearFromForm, monthFromForm)
-            currentMonth = CalendarLogic.MONTHS[month-1]
-            return render_template("month.html", monthName = currentMonth, year = currentYear)
+            selectedMonth, selectedYear = CalendarLogic.nextMonthAndYear(yearFromForm, monthFromForm)
+            selectedMonthName = CalendarLogic.MONTHS[selectedMonth-1]
+            days = CalendarLogic.monthDaysWithWeekday(selectedYear, selectedMonth)
+            return render_template("month.html", monthName = selectedMonthName, year = selectedYear, monthDays = days)
+        
+        days = CalendarLogic.monthDaysWithWeekday(yearFromForm, monthFromForm)
+        for week in days:
+            for day in week:
+                if day == 0:
+                    continue
+                if f'day{day}' in request.form:
+                    return redirect("/day")
+
             
     if request.method == 'GET':
-        currentMonth = CalendarLogic.MONTHS[datetime.today().month-1]
+        currentMonth = datetime.today().month
+        currentMonthName = CalendarLogic.MONTHS[datetime.today().month-1]
         currentYear = datetime.today().year
-        return render_template("month.html", monthName = currentMonth, year = currentYear)
+        days = CalendarLogic.monthDaysWithWeekday(currentYear, currentMonth)
+        return render_template("month.html", monthName = currentMonthName, year = currentYear, monthDays = days)
 
+@app.route("/day", methods=['GET', 'POST'])
+@login_required
+def day():
+    if request.method == 'GET':
+        return render_template("day.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

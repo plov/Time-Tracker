@@ -48,9 +48,9 @@ class CalendarLogic:
         return today_date.day, today_date.month, today_date.year
 
     @staticmethod
-    def month_days(year: int, month: int) -> Iterable[date]:
+    def monthDays(year: int, month: int) -> Iterable[date]:
         return calendar.Calendar(calendar.firstweekday()).itermonthdates(year, month)
 
     @staticmethod
-    def month_days_with_weekday(year: int, month: int) -> List[List[int]]:
+    def monthDaysWithWeekday(year: int, month: int) -> List[List[int]]:
         return calendar.Calendar(calendar.firstweekday()).monthdayscalendar(year, month)
