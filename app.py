@@ -2,7 +2,7 @@ import os
 from flask import Flask, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-from dailyTracking import dailyTracking
+from dailyTracking import DailyTracking
 
 from dbHelper import dbHelper
 from helpers import login_required, warning
@@ -10,6 +10,7 @@ from flask_session import Session
 from datetime import date
 from enum import Enum
 from calendarLogic import CalendarLogic
+from weekCalculator import WeekCalculator 
 
 
 app = Flask(__name__)
@@ -20,7 +21,8 @@ Session(app)
 
 
 db = dbHelper("TT.db")
-dailyTrack = dailyTracking(db, session)
+dailyTrack = DailyTracking(db, session)
+weekCalculator = WeekCalculator(db, session, dailyTrack)
 
 types = { 'start':1, 'end':2 }
 
@@ -37,6 +39,7 @@ def index():
     rows = dailyTrack.getTodayTrackings()
     actions = dailyTrack.getTimeActionsDict(rows)
     availableAactions = dailyTrack.checkAvailableActions(rows)
+    total = dailyTrack.calcHours(rows)
 
     userId = session["user_id"]
     if request.method == 'POST':
@@ -65,12 +68,6 @@ def index():
         return render_template('index.html', actions=availableAactions, actionsList=actions, total=total)
     return render_template("index.html", actions=availableAactions, actionsList=actions, total=total)
 
-
-@app.route("/week", methods=['GET', 'POST'])
-@login_required
-def week():
-    return render_template("week.html")
-
 @app.route("/month", methods=['GET', 'POST'])
 @login_required
 def month():
@@ -91,10 +88,11 @@ def month():
         
         days = CalendarLogic.monthDaysWithWeekday(yearFromForm, monthFromForm)
         for week in days:
-            for day in week:
-                if day == 0:
+            for selectedDay in week:
+                if selectedDay == 0:
                     continue
-                if f'day{day}' in request.form:
+                if f'day{selectedDay}' in request.form:
+                    session['selectedDate'] = {'year':yearFromForm, 'month':monthFromForm, 'day':selectedDay}
                     return redirect("/day")
 
             
@@ -108,8 +106,20 @@ def month():
 @app.route("/day", methods=['GET', 'POST'])
 @login_required
 def day():
-    if request.method == 'GET':
-        return render_template("day.html")
+    selectedDate = session.get('selectedDate')
+    dateString = "{year}-{month}-{day}".format(**selectedDate)
+    rows = dailyTrack.getTheDayTrackings(dateString)
+    actions = dailyTrack.getTimeActionsDict(rows)
+    total = dailyTrack.calcHours(rows)
+    return render_template("day.html", actionsList=actions, total=total, selectedDate=dateString)
+
+@app.route("/week", methods=['GET', 'POST'])
+@login_required
+def week():
+    #weekDays = weekCalculator.getCurrentWeekDatesStrings()
+    #rows = weekCalculator.getWeekTrackings()
+    #weekCalculator.getWeekHours()
+    return render_template("week.html" )
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

@@ -7,7 +7,8 @@ Welcome
 {% block main %}
 <div>
     {% if session["user_id"] %}
-    <div class="d-grid gap-2 col-6 mx-auto"> Week: {{dateStart}} - {{dateEnd}}
+    <div class="d-grid gap-2 col-6 mx-auto"> 
+        <h3>Week: {{dateStart}} - {{dateEnd}} </h3>
         <table class="table">
             <thead>
                 <tr>
@@ -16,10 +17,12 @@ Welcome
                 </tr>
             </thead>
             <tbody>
+                {% for d in days %}
                 <tr>
                     <td class="text-center">{{date}}</td>
                     <td class="text-center">{{hours}}</td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

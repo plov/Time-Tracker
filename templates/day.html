@@ -8,6 +8,7 @@ Welcome
 <div>
     {% if session["user_id"] %}
     <div class="d-grid gap-2 col-6 mx-auto">
+        <h3>{{selectedDate}}</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -27,7 +28,7 @@ Welcome
     </div>
     <div>
         {% if total != 0 %}
-        <p>Total hours for this day:{{total}} </p>
+        <p>Total hours for this day: <h3>{{total}}</h3> </p>
         {% endif %}
     </div>
     </form>

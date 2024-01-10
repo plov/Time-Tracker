@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class dailyTracking:
+class DailyTracking:
 
     def __init__(self, db, session):
         self.db = db
@@ -17,6 +17,11 @@ class dailyTracking:
         #day = datetime.today().date() 
         user = self.session["user_id"]
         rows = self.db.execute(f"SELECT info, timestamp FROM timelog WHERE user_id ={user} and strftime('%d', timestamp) == strftime('%d', date('now','localtime'));")
+        return rows
+        
+    def getTheDayTrackings(self, selectedDate):
+        user = self.session["user_id"]
+        rows = self.db.execute(f"SELECT info, timestamp FROM timelog WHERE user_id ={user} and strftime('%Y-%m-%d', timestamp) = '"+selectedDate+"';")
         return rows
     
     def awailableActions2List(self, actions):
@@ -44,6 +49,8 @@ class dailyTracking:
         return result
     
     def calcHours(self, actions):
+        if len(actions) == 0:
+            return "00:00"
         actionsDict = {}
         actionList = self.getTimeActionsDict(actions)
         for item in actionList:
