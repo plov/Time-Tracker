@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import timedelta, datetime
+from constants import constants
 
 class DailyTracking:
 
@@ -32,10 +33,10 @@ class DailyTracking:
         return list(set(result))
     
     def checkAvailableActions(self, actions) -> dict:
-        result = {"startDay":True, 
-                  "startLunch":True,
-                  "finishLunch":True,
-                  "finishDay":True}
+        result = {constants.START_DAY:True, 
+                  constants.START_LUNCH:True,
+                  constants.FINIFH_LUNCH:True,
+                  constants.FINISH_DAY:True}
         actionList = self.awailableActions2List(actions)
         for item in actionList:
             result[item] = False
@@ -48,16 +49,19 @@ class DailyTracking:
             result.append({"info":action[0], "time":time})
         return result
     
-    def calcHours(self, actions):
+    def calcHours(self, actions)-> timedelta:
         if len(actions) == 0:
-            return "00:00"
+            return timedelta()
         actionsDict = {}
         actionList = self.getTimeActionsDict(actions)
         for item in actionList:
             actionsDict[item["info"]] = item["time"]
-        dayHours = datetime.strptime(actionsDict["finishDay"], "%H:%M") - datetime.strptime(actionsDict["startDay"], "%H:%M")
-        lunchHours = datetime.strptime(actionsDict["finishLunch"], "%H:%M") - datetime.strptime(actionsDict["startLunch"], "%H:%M")
-        return dayHours - lunchHours
+        if constants.FINISH_DAY in actionsDict and constants.START_DAY in actionsDict:   
+            dayHours = datetime.strptime(actionsDict[constants.FINISH_DAY], "%H:%M") - datetime.strptime(actionsDict[constants.START_DAY], "%H:%M")
+            lunchHours = datetime.strptime(actionsDict[constants.FINIFH_LUNCH], "%H:%M") - datetime.strptime(actionsDict[constants.START_LUNCH], "%H:%M")
+            return dayHours - lunchHours
+        else:
+            return timedelta()
 
     def getTimeFromString(self, timestamp):
         date_format = '%Y-%m-%d %H:%M:%S.%f'

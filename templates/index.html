@@ -21,25 +21,25 @@ Welcome
     <form action="/" method="post">
         <div class="d-grid gap-2 col-6 mx-auto">
    
-            {% if actions["startDay"] %}
+            {% if actions["start day"] %}
             <button class="btn btn-primary" type="submit" value="valueStart" name="actionStart">start</button>
             {% else %}
             <button class="btn btn-primary" type="submit" value="valueStart" name="actionStart" disabled>start</button>
             {% endif %}
 
-            {% if actions["startLunch"] and not actions["startDay"] and actions["finishDay"] %}
+            {% if actions["start lunch"] and not actions["start day"] and actions["finish day"] %}
             <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart">lunch start</button>
             {% else %}
             <button class="btn btn-primary" type="submit" value="valueLunchStart" name="actionLunchStart" disabled>lunch start</button>
             {% endif %}
 
-            {% if actions["finishLunch"] and not actions["startLunch"] and actions["finishDay"] %}
+            {% if actions["finish lunch"] and not actions["start lunch"] and actions["finish day"] %}
             <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd">lunch end</button>
             {% else %}
             <button class="btn btn-primary" type="submit" value="valueLunchEnd" name="actionLunchEnd" disabled>lunch end</button>
             {% endif %}
 
-            {% if actions["finishDay"] and actions["startDay"] == False %}
+            {% if actions["finish day"] and actions["start day"] == False %}
             <button class="btn btn-primary" type="submit" value="valueEnd" name="actionEnd">end</button>
             {% else %}
             <button class="btn btn-primary" type="submit" value="valueEnd" name="actionEnd"disabled>end</button>

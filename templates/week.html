@@ -8,7 +8,7 @@ Welcome
 <div>
     {% if session["user_id"] %}
     <div class="d-grid gap-2 col-6 mx-auto"> 
-        <h3>Week: {{dateStart}} - {{dateEnd}} </h3>
+        <h3>{{firstDay}} - {{lastDay}}</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -19,12 +19,17 @@ Welcome
             <tbody>
                 {% for d in days %}
                 <tr>
-                    <td class="text-center">{{date}}</td>
-                    <td class="text-center">{{hours}}</td>
+                    <td class="text-center">{{d.date}}</td>
+                    <td class="text-center">{{d.hours}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <div>
+        {% if total != 0 %}
+        <p>Total hours for week: <h3>{{totalWeeekHours}}</h3> </p>
+        {% endif %}
     </div>
     {% else %}
     <h3>Hello. I tried to make an application for conveniently recording working hours.</h3>

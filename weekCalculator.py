@@ -33,16 +33,19 @@ class WeekCalculator:
         print(rows)
         return rows 
 
-    def getDayHoursForDate(self, date):
+    def getDayHoursForDate(self, date)-> datetime.timedelta:
         rows = self.dayCalc.getTheDayTrackings(date)
         total = self.dayCalc.calcHours(rows)
+        print(f"total {total}")
         return total
 
-    def getWeekHours(self):
+    def getWeekHours(self) -> tuple:
         weekDatesStrings = self.getCurrentWeekDatesStrings()
-        result = []
+        dateHourList = []
+        totalWeeekHours = datetime.timedelta()
         for date in weekDatesStrings:
-            result.append(self.getDayHoursForDate(date))
-        return result       
+            totalWeeekHours += self.getDayHoursForDate(date)
+            dateHourList.append({'hours': self.getDayHoursForDate(date), 'date': date})
+        return (totalWeeekHours, dateHourList)       
 
 

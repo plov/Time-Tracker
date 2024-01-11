@@ -11,6 +11,7 @@ from datetime import date
 from enum import Enum
 from calendarLogic import CalendarLogic
 from weekCalculator import WeekCalculator 
+from constants import constants
 
 
 app = Flask(__name__)
@@ -44,22 +45,22 @@ def index():
     userId = session["user_id"]
     if request.method == 'POST':
         if request.form.get('actionStart') == 'valueStart':
-            dailyTrack.saveTimeLog(1, "startDay")
+            dailyTrack.saveTimeLog(1, constants.START_DAY)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionLunchStart') == 'valueLunchStart':
-            dailyTrack.saveTimeLog(2, "startLunch")
+            dailyTrack.saveTimeLog(2, constants.START_LUNCH)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionLunchEnd') == 'valueLunchEnd':
-            dailyTrack.saveTimeLog(1, "finishLunch")
+            dailyTrack.saveTimeLog(1, constants.FINIFH_LUNCH)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionEnd') == 'valueEnd':
-            dailyTrack.saveTimeLog(2, "finishDay")
+            dailyTrack.saveTimeLog(2, constants.FINISH_DAY)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
@@ -107,8 +108,11 @@ def month():
 @login_required
 def day():
     selectedDate = session.get('selectedDate')
-    dateString = "{year}-{month}-{day}".format(**selectedDate)
+    noFormatDateString = "{year}-{month}-{day}".format(**selectedDate)
+    noFormatDate = datetime.strptime(noFormatDateString, "%Y-%m-%d")
+    dateString = date.strftime(noFormatDate, "%Y-%m-%d")
     rows = dailyTrack.getTheDayTrackings(dateString)
+    print(rows)
     actions = dailyTrack.getTimeActionsDict(rows)
     total = dailyTrack.calcHours(rows)
     return render_template("day.html", actionsList=actions, total=total, selectedDate=dateString)
@@ -116,10 +120,9 @@ def day():
 @app.route("/week", methods=['GET', 'POST'])
 @login_required
 def week():
-    #weekDays = weekCalculator.getCurrentWeekDatesStrings()
-    #rows = weekCalculator.getWeekTrackings()
-    #weekCalculator.getWeekHours()
-    return render_template("week.html" )
+    weekDays = weekCalculator.getCurrentWeekDatesStrings()
+    result = weekCalculator.getWeekHours()
+    return render_template("week.html", firstDay = weekDays[0], lastDay = weekDays[-1], days=result[-1], totalWeeekHours=result[0])
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
