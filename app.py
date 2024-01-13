@@ -111,20 +111,29 @@ def month():
 def day():
     selectedDate = session.get('selectedDate')
     noFormatDateString = "{year}-{month}-{day}".format(**selectedDate)
-    noFormatDate = datetime.strptime(noFormatDateString, "%Y-%m-%d")
-    dateString = date.strftime(noFormatDate, "%Y-%m-%d")
+    dateObj = datetime.strptime(noFormatDateString, "%Y-%m-%d")
+    dateString = date.strftime(dateObj, "%Y-%m-%d")
     rows = dailyTrack.getTheDayTrackings(dateString)
-    print(rows)
     actions = dailyTrack.getTimeActionsDict(rows)
     total = dailyTrack.calcHoursPerDay(rows)
+    if(dateObj.strftime('%Y-%m-%d') == datetime.today().strftime('%Y-%m-%d')):
+        return redirect("/")
     return render_template("day.html", actionsList=actions, total=total, selectedDate=dateString)
 
 @app.route("/week", methods=['GET', 'POST'])
 @login_required
 def week():
     weekDays = weekCalculator.getCurrentWeekDatesStrings()
-    result = weekCalculator.getWeekHours()
-    return render_template("week.html", firstDay = weekDays[0], lastDay = weekDays[-1], days=result[-1], totalWeeekHours=result[0])
+    if request.method == 'POST':
+        for selectedDay in weekDays:
+            if f'day{selectedDay}' in request.form:
+                date = datetime.strptime(selectedDay, "%Y-%m-%d")
+                session['selectedDate'] = {'year':date.year, 'month':date.month, 'day':date.day}
+                return redirect("/day")
+
+    if request.method == 'GET':
+        result = weekCalculator.getWeekHours()
+        return render_template("week.html", firstDay = weekDays[0], lastDay = weekDays[-1], days=result[-1], totalWeeekHours=result[0])
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

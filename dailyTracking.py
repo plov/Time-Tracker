@@ -26,11 +26,13 @@ class DailyTracking:
             return True
         
     def finishDayBefore(self):    
-        rows = self.checkIfLastStartedDay()
+        rows = self.checkLastStartedDay()
         isLastDayFinished = self.checkIfLastDayFinished()
-        print(f"isLastDayFinished: {isLastDayFinished}")
-        if not isLastDayFinished:
-            dateStr = rows[0][0]
+        dateStr = rows[0][0]
+        dateObj = datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S.%f")
+        dateObj = dateObj.strftime("%Y-%m-%d")
+        now = datetime.now()
+        if not isLastDayFinished and dateObj < now.strftime("%Y-%m-%d"):
             dateObj = datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S.%f")
             dateObj = dateObj.replace(hour=23, minute=59, second=0, microsecond=0)
             date = dateObj.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -53,7 +55,7 @@ class DailyTracking:
         """)
         return len(rows) > 0
     
-    def checkIfLastStartedDay(self):
+    def checkLastStartedDay(self):
         user = self.session["user_id"]
         rows = self.db.execute(f"""
             SELECT timestamp
