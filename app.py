@@ -40,31 +40,33 @@ def index():
     rows = dailyTrack.getTodayTrackings()
     actions = dailyTrack.getTimeActionsDict(rows)
     availableAactions = dailyTrack.checkAvailableActions(rows)
-    total = dailyTrack.calcHours(rows)
+    total = dailyTrack.calcHoursPerDay(rows)
+    result = dailyTrack.finishDayBefore()
+    print(f"result: {result}")
 
     userId = session["user_id"]
     if request.method == 'POST':
         if request.form.get('actionStart') == 'valueStart':
-            dailyTrack.saveTimeLog(1, constants.START_DAY)
+            dailyTrack.saveTimeLog(constants.START_TYPE, constants.START_DAY)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionLunchStart') == 'valueLunchStart':
-            dailyTrack.saveTimeLog(2, constants.START_LUNCH)
+            dailyTrack.saveTimeLog(constants.STOP_TYPE, constants.START_LUNCH)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionLunchEnd') == 'valueLunchEnd':
-            dailyTrack.saveTimeLog(1, constants.FINIFH_LUNCH)
+            dailyTrack.saveTimeLog(constants.START_TYPE, constants.FINISH_LUNCH)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
         elif request.form.get('actionEnd') == 'valueEnd':
-            dailyTrack.saveTimeLog(2, constants.FINISH_DAY)
+            dailyTrack.saveTimeLog(constants.STOP_TYPE, constants.FINISH_DAY)
             rows = dailyTrack.getTodayTrackings()
             availableAactions = dailyTrack.checkAvailableActions(rows)
             actions = dailyTrack.getTimeActionsDict(rows)
-            total = dailyTrack.calcHours(rows)
+            total = dailyTrack.calcHoursPerDay(rows)
     elif request.method == 'GET':
         return render_template('index.html', actions=availableAactions, actionsList=actions, total=total)
     return render_template("index.html", actions=availableAactions, actionsList=actions, total=total)
@@ -114,7 +116,7 @@ def day():
     rows = dailyTrack.getTheDayTrackings(dateString)
     print(rows)
     actions = dailyTrack.getTimeActionsDict(rows)
-    total = dailyTrack.calcHours(rows)
+    total = dailyTrack.calcHoursPerDay(rows)
     return render_template("day.html", actionsList=actions, total=total, selectedDate=dateString)
 
 @app.route("/week", methods=['GET', 'POST'])

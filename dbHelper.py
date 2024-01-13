@@ -36,7 +36,7 @@ class dbHelper:
             print(f"The error '{e}' occurred")
 
     def execute(self, query):
-        #print(query)
+        print(f"query {query}")
         connection = self.create_connection(self.path)
         result = self.execute_read_query(connection, query)
         if result == None :
@@ -46,6 +46,7 @@ class dbHelper:
         
     def executePush(self, query, data):
         connection = self.create_connection(self.path)
+        print(query)
         result = self.execute_query(connection, query, data)
         if result == None :
             return {}

@@ -1,4 +1,5 @@
-import datetime
+from datetime import timedelta, datetime, date
+from collections import defaultdict
 
 class WeekCalculator:
     def __init__(self, db, session, dailyDracking):
@@ -7,15 +8,15 @@ class WeekCalculator:
         self.dayCalc = dailyDracking
         
     def getCurrentWeekDates(self): 
-        today = datetime.date.today()
+        today = date.today()
         currentWeekday = today.weekday() + 1
-        startOfWeek = today - datetime.timedelta(days=currentWeekday)
-        endOfWeek = startOfWeek + datetime.timedelta(days=6) 
+        startOfWeek = today - timedelta(days=currentWeekday)
+        endOfWeek = startOfWeek + timedelta(days=6) 
         
         weekDates = []
         for i in range(7):
-            date = startOfWeek + datetime.timedelta(days=i)
-            weekDates.append(date)
+            dayDate = startOfWeek + timedelta(days=i)
+            weekDates.append(dayDate)
         
         return weekDates
 
@@ -30,22 +31,30 @@ class WeekCalculator:
         weekDatesStrings = self.getCurrentWeekDatesStrings()
         user = self.session["user_id"]
         rows = self.db.execute(f"SELECT info, timestamp FROM timelog WHERE user_id ={user} and strftime('%Y-%m-%d', timestamp) in ('" + "','".join(weekDatesStrings)+"');")
-        print(rows)
         return rows 
 
-    def getDayHoursForDate(self, date)-> datetime.timedelta:
-        rows = self.dayCalc.getTheDayTrackings(date)
-        total = self.dayCalc.calcHours(rows)
-        print(f"total {total}")
+    def getDayHoursForDate(self, data)-> timedelta:
+        total = self.dayCalc.calcHoursPerDay(data)
         return total
 
     def getWeekHours(self) -> tuple:
         weekDatesStrings = self.getCurrentWeekDatesStrings()
         dateHourList = []
-        totalWeeekHours = datetime.timedelta()
+        totalWeeekHours = timedelta()
+        rows = self.getWeekTrackings()
+        datesDict = defaultdict(list)
+        workedDatesDict = defaultdict(list)
         for date in weekDatesStrings:
-            totalWeeekHours += self.getDayHoursForDate(date)
-            dateHourList.append({'hours': self.getDayHoursForDate(date), 'date': date})
-        return (totalWeeekHours, dateHourList)       
+            datesDict[date].append(('no work', date+' 00:00:00.0'))
+        for row in rows:
+            dayDate = row[1].split(" ")[0]
+            workedDatesDict[dayDate].append(row)
+        datesDict.update(workedDatesDict)
+        datesLists = list(datesDict.values())
+        for day in datesLists:
+            if day[0][0] != 'no work':
+                totalWeeekHours += self.getDayHoursForDate(day)
+            dateHourList.append({'hours': self.getDayHoursForDate(day), 'date': day[0][1].split(" ")[0]})
+        return (totalWeeekHours, dateHourList)     
 
 
