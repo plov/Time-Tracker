@@ -1,30 +1,45 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    register
+register
 {% endblock %}
 
 {% block main %}
+
+<div class="reg-form">
     <form action="/register" method="post">
-        <!--<div class="mb-3">
-            <p>If you want to organize time tracking for other people, select team use mode.</p>
-            <input type="radio" id="html" name="uses" value="HTML">
-            <label for="html">self use</label><br>
-            <input type="radio" id="css" name="uses" value="CSS">
-            <label for="css">team use</label><br>
-            <p>Or you can enable this mode later.</p>
-        </div>-->
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="firstname" name="firstname" placeholder="First name" type="text">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="lastname" name="lastname" placeholder="Last name" type="text">
+        <div class="reg-title">
+            <h1>Register</h1>
         </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+        <div class="reg-form-group">
+            <label>Username</label>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username"
+                placeholder="Username" type="text">
         </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
-            <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirmation" type="password">
+        <div class="reg-form-group">
+            <label>Password</label>
+            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password"
+                type="password">
+            <label>Confirmation</label>
+            <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirmation"
+                type="password">
         </div>
-        <button class="btn btn-primary" type="submit">Log In</button>
+        <div class="reg-form-group">
+            <label>First Name</label>
+            <label class="opt-lable">optional</label>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="firstname" name="firstname"
+                placeholder="First name" type="text">
+        </div>
+        <div class="reg-form-group">
+            <label>Last Name</label>
+            <label class="opt-lable">optional</label>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="lastname" name="lastname"
+                placeholder="Last name" type="text">
+        </div>
+        <div class="reg-form-group">
+            <button class="btn btn-primary" type="submit">Register</button>
+        </div>
     </form>
+</div>
+
 {% endblock %}

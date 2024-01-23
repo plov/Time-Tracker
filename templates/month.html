@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Welcome
+Month
 {% endblock %}
 
 {% block main %}
 <div>
     {% if session["user_id"] %}
-    <div class="d-grid gap-2 col-6 mx-auto">
+    <div class="month-table" ><!--class="d-grid gap-2 col-6 mx-auto">/-->
         <form action="/month" method="post">
             <div>
                 <button class="btn btn-light" type="submit" value="valueLeft" name="actionLeft">
@@ -17,7 +17,7 @@ Welcome
                             d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
                     </svg>
                 </button>
-                <input type="text" name="monthField" value="{{monthName}}" readonly> <input type="text" name="yearField"
+                <input type="text" name="monthField" value="{{monthName}}" readonly> <input class="year-input" type="text" name="yearField"
                     value="{{year}}" readonly>
                 <button class="btn btn-light" type="submit" value="valueRight" name="actionRight">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

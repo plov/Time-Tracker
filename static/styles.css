@@ -1,23 +1,76 @@
-/* Size for brand */
-nav .navbar-brand
-{
+
+nav .navbar-brand {
     font-size: xx-large;
 }
 
-/* Colors for brand */
-nav .navbar-brand .blue
-{
+nav .navbar-brand .blue {
     color: #537fbe;
 }
-nav .navbar-brand .red
-{
+
+nav .navbar-brand .red {
     color: #ea433b;
 }
-nav .navbar-brand .yellow
-{
+
+nav .navbar-brand .yellow {
     color: #f5b82e;
 }
-nav .navbar-brand .green
-{
+
+nav .navbar-brand .green {
     color: #2e944b;
 }
+.reg-form {
+    background: #e4e7ec;
+    border-radius: 30px;
+    max-width: 400px;
+    margin: auto;
+    padding: 30px;
+}
+
+.reg-form-group {
+    margin-bottom: 20px;
+}
+
+.reg-form-group label {
+    font-size: small;
+    color: #404144;
+}  
+
+.reg-form-group .opt-lable{
+    font-size: xx-small;
+    color: #767e86;
+}
+
+.reg-form-group input {
+    width: 100%;
+    height: 30px;
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid #86898f;
+    border-radius: 5px;
+    background: #fff;
+    color: #86898f;
+}
+
+.month-table {
+    max-width: 400px;
+    margin: auto;
+}
+
+.month-table input {
+    font-size: 20px;
+    color: #323335;
+    width: 105px;
+    height: 30px;
+    padding: 5px;
+    border: none;
+    background: #fff;
+}
+
+.month-table input:first-of-type  {
+    text-align:right;
+}
+
+.month-table .year-input {
+    text-align:center;
+}
+

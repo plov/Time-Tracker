@@ -4,7 +4,7 @@ import subprocess
 import urllib
 import uuid
 
-from flask import redirect, render_template, session
+from flask import flash, redirect, render_template, session
 from functools import wraps
 
 def login_required(f):
@@ -20,16 +20,13 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def warning(message, code=400):
-    """Render message as an warning to user."""
-    def escape(s):
-        """
-        Escape special characters.
+def validate_form(form, fields, template="register.html"):
+    for field in fields:
+        if not form.get(field):
+            flash(f"must provide {field}")
+            return render_template(template)
+    return None
 
-        https://github.com/jacebrowning/memegen#special-characters
-        """
-        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
-                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
-            s = s.replace(old, new)
-        return s
-    return render_template("warning.html", top=code, bottom=escape(message)), code
+def warning(message, tamplate = "register.html"):
+    flash(message)
+    return render_template(tamplate, )
